@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NextScale Automation</title>
+  <meta name="description" content="Automação de atendimento e agendamento online para negócios de serviços. Implementação, manutenção e suporte contínuos." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-overlay: rgba(0, 0, 0, 0.55);
+      --primary: #8A2BE2; /* Roxo */
+      --primary-700: #6c1fb6;
+      --text: #f5f7fa;
+      --text-muted: #cfd6e4;
+      --card-bg: rgba(20, 22, 27, 0.75);
+      --border: rgba(255, 255, 255, 0.12);
+      --accent: #00D4FF;
+      --maxw: 1100px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background: #000;
+    }
+
+    /* Fundo com imagem e overlay */
+    .site-bg {
+      position: fixed;
+      inset: 0;
+      background-image: url("NextScale.png"); /* Substitua pelo caminho/URL da sua imagem */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: -2;
+      filter: saturate(1.05);
+    }
+    .site-bg::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.5),
+        rgba(0, 0, 0, 0.65)
+      );
+      z-index: -1;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(8px);
+      background: rgba(0,0,0,0.35);
+      border-bottom: 1px solid var(--border);
+      z-index: 10;
+    }
+    .nav {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, var(--accent), var(--primary));
+      box-shadow: 0 0 24px rgba(138,43,226,0.6);
+    }
+    .nav a {
+      color: var(--text);
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: 600;
+      opacity: 0.9;
+    }
+    .nav a:hover { opacity: 1; }
+
+    .cta-btn {
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      color: #0b0e12;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 18px;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(0,212,255,0.25);
+    }
+    .cta-btn:hover { filter: brightness(1.05); }
+
+    main {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 30px 20px 80px;
+    }
+
+    /* Hero */
+    .hero {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 28px;
+      align-items: center;
+      padding: 40px 0 20px;
+    }
+    .hero h1 {
+      font-size: clamp(28px, 4vw, 46px);
+      margin: 0 0 12px;
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+    }
+    .hero p {
+      color: var(--text-muted);
+      font-size: clamp(16px, 2.2vw, 18px);
+      margin: 0 0 22px;
+    }
+    .hero-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 18px;
+      border-radius: 14px;
+      backdrop-filter: blur(8px);
+    }
+    .hero-list {
+      display: grid;
+      gap: 12px;
+      margin: 12px 0 18px;
+    }
+    .hero-list .item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .hero-list .dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--accent);
+      margin-top: 6px;
+    }
+
+    /* Seções */
+    section {
+      margin-top: 48px;
+    }
+    h2 {
+      font-size: clamp(22px, 3.2vw, 32px);
+      margin: 0 0 12px;
+    }
+    .muted { color: var(--text-muted); }
+
+    /* Cards */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+    }
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+    .card p { margin: 0; color: var(--text-muted); }
+
+    /* Pricing */
+    .pricing {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .price-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .price {
+      font-size: 26px;
+      font-weight: 700;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 12px;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--text-muted);
+    }
+    .features {
+      display: grid;
+      gap: 8px;
+      margin: 8px 0 14px;
+    }
+    .features .check {
+      color: #7CFB8F;
+      font-weight: 700;
+      margin-right: 6px;
+    }
+
+    /* CTA */
+    .cta-strip {
+      margin-top: 50px;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 60px;
+      padding: 24px 20px;
+      background: rgba(0,0,0,0.35);
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .footer-grid {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr;
+      gap: 20px;
+    }
+    .footer-grid a { color: var(--text-muted); text-decoration: none; }
+    .footer-grid a:hover { color: var(--text); }
+
+    /* Responsivo */
+    @media (max-width: 980px) {
+      .hero { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr 1fr; }
+      .pricing { grid-template-columns: 1fr; }
+      .cta-strip { flex-direction: column; align-items: flex-start; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      .grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .nav a { margin-left: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="site-bg" aria-hidden="true"></div>
+
+  <header>
+    <nav class="nav" aria-label="Navegação principal">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"></div>
+        <span>NextScale Automation</span>
+      </div>
+      <div>
+        <a href="#servicos">Serviços</a>
+        <a href="#planos">Planos</a>
+        <a href="#contato">Contato</a>
+        <button class="cta-btn" onclick="document.getElementById('contato').scrollIntoView({behavior:'smooth'})">
+          Falar com especialista
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero" id="inicio">
+      <div>
+        <h1>Automação que escala atendimento e agendamento.</h1>
+        <p>Implementamos, mantemos e otimizamos sistemas de automação para negócios de serviços. Reduza custos, elimine falhas no atendimento e aumente a recorrência de clientes.</p>
+        <div class="hero-list">
+          <div class="item">
+            <div class="dot"></div>
+            <div>
+              <strong>Implementação sob medida</strong>
+              <div class="muted">Setup inicial com integração ao seu fluxo de trabalho.</div>
+            </div>
+          </div>
+          <div class="item">
+            <div class="dot"></div>
+            <div>
+              <strong>Manutenção e suporte contínuos</strong>
+              <div class="muted">Atualizações, monitoramento e suporte dedicado.</div>
+            </div>
+          </div>
+          <div class="item">
+            <div class="dot"></div>
+            <div>
+              <strong>Resultados mensuráveis</strong>
+              <div class="muted">Redução de no-shows e aumento de clientes recorrentes.</div>
+            </div>
+          </div>
+        </div>
+        <button class="cta-btn" onclick="document.getElementById('planos').scrollIntoView({behavior:'smooth'})">
+          Ver planos
+        </button>
+      </div>
+      <div class="hero-card" role="img" aria-label="Logo e identidade NextScale em destaque">
+        <h3>NextScale Automation</h3>
+        <p class="muted">Tecnologia orientada a resultado, com foco em eficiência operacional e experiência do cliente.</p>
+      </div>
+    </section>
+
+    <!-- SERVIÇOS -->
+    <section id="servicos">
+      <h2>Serviços</h2>
+      <p class="muted">Da implementação ao suporte, cobrimos o ciclo completo para que sua automação funcione de forma confiável.</p>
+      <div class="grid">
+        <div class="card">
+          <h3>Implementação básica</h3>
+          <p>Configuração inicial, integrações essenciais e treinamento rápido da equipe.</p>
+        </div>
+        <div class="card">
+          <h3>Manutenção & suporte</h3>
+          <p>Monitoramento, atualizações contínuas e suporte técnico dedicado.</p>
+        </div>
+        <div class="card">
+          <h3>Otimização de processos</h3>
+          <p>Análise de métricas, melhoria de funis e recomendações de crescimento.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLANOS -->
+    <section id="planos">
+      <h2>Planos</h2>
+      <p class="muted">Transparência total: um setup inicial e uma mensalidade de suporte contínuo.</p>
+      <div class="pricing">
+        <div class="price-card">
+          <span class="badge">Setup</span>
+          <h3>Basic Implementation</h3>
+          <div class="price">€2.500</div>
+          <div class="features">
+            <div><span class="check">✓</span> Integração e configuração inicial</div>
+            <div><span class="check">✓</span> Treinamento de uso</div>
+            <div><span class="check">✓</span> Go-live assistido</div>
+          </div>
+          <button class="cta-btn" onclick="alert('Envie seu pedido de Setup. Integraremos com seu fluxo de trabalho.')">
+            Solicitar Setup
+          </button>
+        </div>
+        <div class="price-card">
+          <span class="badge">Mensal</span>
+          <h3>Maintenance & Support</h3>
+          <div class="price">€800/mês</div>
+          <div class="features">
+            <div><span class="check">✓</span> Manutenção contínua</div>
+            <div><span class="check">✓</span> Monitoramento e atualizações</div>
+            <div><span class="check">✓</span> Suporte dedicado</div>
+          </div>
+          <button class="cta-btn" onclick="alert('Assinatura mensal será iniciada após 30 dias do setup, conforme configuração no Stripe.')">
+            Assinar
+          </button>
+        </div>
+        <div class="price-card">
+          <span class="badge">Plus</span>
+          <h3>Growth</h3>
+          <div class="price">Sob consulta</div>
+          <div class="features">
+            <div><span class="check">✓</span> Relatórios avançados</div>
+            <div><span class="check">✓</span> Otimizações de funis</div>
+            <div><span class="check">✓</span> SLAs personalizados</div>
+          </div>
+          <button class="cta-btn" onclick="alert('Vamos entender seu objetivo e montar uma proposta de Growth.')">
+            Falar com vendas
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <div class="cta-strip">
+      <div>
+        <h3>Pronto para escalar com automação confiável?</h3>
+        <p class="muted">Integramos, mantemos e evoluímos seu sistema para que você foque no crescimento.</p>
+      </div>
+      <button class="cta-btn" onclick="document.getElementById('contato').scrollIntoView({behavior:'smooth'})">
+        Começar agora
+      </button>
+    </div>
+
+    <!-- CONTATO -->
+    <section id="contato" aria-label="Formulário de contato">
+      <h2>Contato</h2>
+      <p class="muted">Conte um pouco sobre seu negócio e o objetivo com automação. Responderemos em breve.</p>
+      <form class="card" onsubmit="event.preventDefault(); alert('Obrigado! Entraremos em contato em breve.');">
+        <div style="display:grid; gap:12px; grid-template-columns: 1fr 1fr;">
+          <div>
+            <label for="nome">Nome</label>
+            <input id="nome" name="nome" type="text" placeholder="Seu nome" required
+              style="width:100%; margin-top:6px; padding:10px; border-radius:10px; border:1px solid var(--border); background:#0b0e12; color:var(--text);" />
+          </div>
+          <div>
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="voce@empresa.com" required
+              style="width:100%; margin-top:6px; padding:10px; border-radius:10px; border:1px solid var(--border); background:#0b0e12; color:var(--text);" />
+          </div>
+        </div>
+        <div style="margin-top:12px;">
+          <label for="mensagem">Mensagem</label>
+          <textarea id="mensagem" name="mensagem" rows="5" placeholder="Descreva seu objetivo com automação"
+            style="width:100%; margin-top:6px; padding:10px; border-radius:10px; border:1px solid var(--border); background:#0b0e12; color:var(--text);"></textarea>
+        </div>
+        <div style="margin-top:14px; display:flex; gap:10px; align-items:center;">
+          <button class="cta-btn" type="submit">Enviar</button>
+          <span class="muted">Ou envie um email: contato@nextscale.com</span>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <strong>NextScale Automation</strong>
+        <p class="muted">Automação de atendimento e agendamento para negócios que valorizam eficiência e recorrência.</p>
+      </div>
+      <div>
+        <strong>Links</strong>
+        <div style="margin-top:8px; display:grid; gap:8px;">
+          <a href="#servicos">Serviços</a>
+          <a href="#planos">Planos</a>
+          <a href="#contato">Contato</a>
+        </div>
+      </div>
+      <div>
+        <strong>Legal</strong>
+        <div style="margin-top:8px; display:grid; gap:8px;">
+          <a href="#">Termos</a>
+          <a href="#">Privacidade</a>
+        </div>
+      </div>
+    </div>
+    <div style="max-width:var(--maxw); margin:18px auto 0; font-size:14px;">
+      © <span id="year"></span> NextScale Automation. Todos os direitos reservados.
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
